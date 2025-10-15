@@ -1,0 +1,41 @@
+name: Deploy Midterm Folder to Pages
+
+on:
+  # Triggers the workflow on pushes to the main branch
+  push:
+    branches:
+      - main # ⬅️ CHANGE this to your default branch name (e.g., 'master')
+
+  # Allows manual runs from the Actions tab
+  workflow_dispatch:
+
+# Grant permissions for the GITHUB_TOKEN to deploy Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  cancel-in-progress: true
+  group: pages
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # This is the key step: it ensures only the 'mid-term' folder content is included
+      - name: Upload Artifact
+        # The 'mid-term' directory is uploaded as the deployment artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'mid-term' # ⬅️ Target ONLY this folder
+
+      - name: Deploy to GitHub Pages
+        # The official action to publish the uploaded artifact
+        uses: actions/deploy-pages@v4
